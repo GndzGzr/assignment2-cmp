@@ -66,9 +66,12 @@ class ResponseCalibration:
         # Number of unique pixel values (typically 256 for 8-bit images)
         n = 256
         
+        # Calculate the number of sampled pixels per image
+        pixels_per_image = n_samples
+        
         # Create the coefficient matrix A and the vector b
         n_data = len(z_values)
-        n_unknowns = n + n_samples  # g values + log irradiances
+        n_unknowns = n + pixels_per_image  # g values + log irradiances (one per sampled pixel location)
         
         # Initialize A matrix and b vector
         A = np.zeros((n_data + n-2, n_unknowns))
@@ -77,11 +80,10 @@ class ResponseCalibration:
         # Fill in data term equations
         k = 0
         for i, (z, t) in enumerate(zip(z_values, t_values)):
-            # Convert z from [0,1] to [0,255] range for indexing
-            z_idx = int(z * 255)
-            w = self.weighting_method(z)  # z is already in [0,1] for weighting
+            z_idx = int(z * 255)  # Convert from [0,1] to [0,255]
+            w = self.weighting_method(z)
             A[k, z_idx] = w
-            A[k, n + i//len(self.images)] = -w
+            A[k, n + (i % pixels_per_image)] = -w  # Use modulo to get correct pixel index
             b[k] = w * np.log(t)
             k += 1
             
