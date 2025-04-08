@@ -115,7 +115,7 @@ def run_experiments():
     Run experiments with different combinations of image types, merging methods, and weighting schemes.
     """
     # Parameters for experiments
-    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "Lab Booth")
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "Lab_Booth")
     output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
     os.makedirs(output_dir, exist_ok=True)
     
