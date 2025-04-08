@@ -67,7 +67,6 @@ class ResponseCalibration:
         n = 256
         
         # Create the coefficient matrix A and the vector b
-        # Number of equations: n_samples * n_images (data terms) + n-2 (smoothness terms)
         n_data = len(z_values)
         n_unknowns = n + n_samples  # g values + log irradiances
         
@@ -78,8 +77,10 @@ class ResponseCalibration:
         # Fill in data term equations
         k = 0
         for i, (z, t) in enumerate(zip(z_values, t_values)):
-            w = self.weighting_method(z/255.0)  # normalize z to [0,1] for weighting
-            A[k, int(z)] = w
+            # Convert z from [0,1] to [0,255] range for indexing
+            z_idx = int(z * 255)
+            w = self.weighting_method(z)  # z is already in [0,1] for weighting
+            A[k, z_idx] = w
             A[k, n + i//len(self.images)] = -w
             b[k] = w * np.log(t)
             k += 1
